@@ -1,12 +1,13 @@
-version: '3'
+version: '3.1'
+
 services:
   postgres:
     container_name: postgres
     image: postgres:latest
     ports:
-      - '5432:5432'
+      - 27017:27017
     volumes:
-      - /data/postgres:/data/postgres
+      - ./data/postgres:/data/postgres
     env_file:
       - docker.env
     networks:
@@ -20,7 +21,7 @@ services:
     ports:
       - '8080:80'
     volumes:
-      - /data/pgadmin:/root/.pgadmin
+      - ./data/pgadmin:/root/.pgadmin
     env_file:
       - docker.env
     networks:
