@@ -16,3 +16,5 @@ export const JWT = {
   SECRET: 'JWT_SECRET',
   EXPIRATION_TIME: 'JWT_EXPIRATION_TIME',
 };
+
+export const COUNT_SECONDS_IN_HOUR = 3600;
