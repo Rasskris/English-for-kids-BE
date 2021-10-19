@@ -4,6 +4,8 @@ export const USER_PASSWORD_EXEPTION = 'Wrong credentials provided';
 
 export const USER_ID_EXEPTION = 'User with this id does not exist';
 
+export const CATEGORY_ID_EXEPTION = 'Category with this id does not exist';
+
 export const SERVER_ERROR = 'Something went wrong';
 
 export const SALT_ROUNDS = 10;
