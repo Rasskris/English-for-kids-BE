@@ -5,6 +5,7 @@ import { DataBaseModule } from './database';
 import { AuthenticationModule } from './authentication';
 import { UsersModule } from './users';
 import { CategoriesModule } from './categories';
+import { WordsModule } from './words';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CategoriesModule } from './categories';
     AuthenticationModule,
     UsersModule,
     CategoriesModule,
+    WordsModule,
   ],
   controllers: [],
   providers: [],

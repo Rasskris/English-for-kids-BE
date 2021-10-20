@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CATEGORY_ID_EXEPTION } from 'src/constants';
 import { Repository } from 'typeorm';
+import { ENTITY_NAME, QUERY_NAME } from '../constants';
+import { EntityNotFoudException } from '../exeptions';
 import { Category } from './category.entity';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 
@@ -17,12 +18,15 @@ export class CategoriesService {
   }
 
   async getCategory(id: number) {
-    const category = await this.categoriesRepository.findOne({ id });
+    const category = await this.categoriesRepository.findOne(
+      { id },
+      { relations: ['words'] },
+    );
 
     if (category) {
       return category;
     }
-    throw new HttpException(CATEGORY_ID_EXEPTION, HttpStatus.NOT_FOUND);
+    throw new EntityNotFoudException(ENTITY_NAME.CATEGORY, QUERY_NAME.ID, id);
   }
 
   async createCategory(categoryData: CreateCategoryDto) {
@@ -45,6 +49,6 @@ export class CategoriesService {
     if (affected) {
       return id;
     }
-    throw new HttpException(CATEGORY_ID_EXEPTION, HttpStatus.NOT_FOUND);
+    throw new EntityNotFoudException(ENTITY_NAME.CATEGORY, QUERY_NAME.ID, id);
   }
 }
