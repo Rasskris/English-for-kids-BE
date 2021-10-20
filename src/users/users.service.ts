@@ -1,9 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { USER_EMAIL_EXEPTION, USER_ID_EXEPTION } from '../constants';
-import { CreateUserDto } from './dto/createUser.dto';
-import { User } from '.';
+import { ENTITY_NAME, QUERY_NAME } from '../constants';
+import { CreateUserDto } from './dto';
+import { EntityNotFoudException } from '../exeptions';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {
@@ -18,7 +19,7 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new HttpException(USER_EMAIL_EXEPTION, HttpStatus.NOT_FOUND);
+    throw new EntityNotFoudException(ENTITY_NAME.USER, QUERY_NAME.EMAIL, email);
   }
 
   async getById(id: number) {
@@ -26,7 +27,7 @@ export class UsersService {
     if (user) {
       return user;
     }
-    throw new HttpException(USER_ID_EXEPTION, HttpStatus.NOT_FOUND);
+    throw new EntityNotFoudException(ENTITY_NAME.USER, QUERY_NAME.ID, id);
   }
 
   async create(userData: CreateUserDto) {
