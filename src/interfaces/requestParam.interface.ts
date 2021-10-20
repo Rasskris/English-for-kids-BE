@@ -1,3 +1,3 @@
 export interface RequestParam {
-  id: string;
+  [key: string]: string;
 }
