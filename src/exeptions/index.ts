@@ -1,0 +1,1 @@
+export { EntityNotFoudException } from './NotFoundExeption';
