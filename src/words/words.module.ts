@@ -1,15 +1,12 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoriesModule } from 'src/categories';
 import { Word } from './word.entity';
 import { WordsController } from './words.controller';
 import { WordsService } from './words.service';
+import { FilesModule } from '../files';
 
 @Module({
-  imports: [
-    forwardRef(() => CategoriesModule),
-    TypeOrmModule.forFeature([Word]),
-  ],
+  imports: [TypeOrmModule.forFeature([Word]), FilesModule],
   controllers: [WordsController],
   providers: [WordsService],
 })
