@@ -6,8 +6,11 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import { RequestParam } from 'src/interfaces';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { RequestParam, WordFiles } from '../interfaces';
 import { WordsService } from './words.service';
 import { CreateWordDto, UpdateWordDto } from './dto';
 
@@ -20,20 +23,33 @@ export class WordsController {
     return this.wordsService.getWord(Number(id));
   }
 
-  @Post(':categoryId')
+  @Post()
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'audio', maxCount: 1 },
+    ]),
+  )
   async createWord(
     @Body() wordData: CreateWordDto,
-    @Param() { categoryId }: RequestParam,
+    @UploadedFiles() files: WordFiles,
   ) {
-    return this.wordsService.createWord(wordData, Number(categoryId));
+    return this.wordsService.createWord(wordData, files);
   }
 
   @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'audio', maxCount: 1 },
+    ]),
+  )
   async updateWord(
     @Body() wordData: UpdateWordDto,
     @Param() { id }: RequestParam,
+    @UploadedFiles() files?: WordFiles,
   ) {
-    return this.wordsService.updateWord(wordData, Number(id));
+    return this.wordsService.updateWord(wordData, Number(id), files);
   }
 
   @Delete(':id')

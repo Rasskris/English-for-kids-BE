@@ -1,22 +1,32 @@
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Category } from '../categories';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { File } from '../files';
 
 @Entity()
 export class Word {
   @PrimaryGeneratedColumn()
   public id?: number;
 
-  @Column({ unique: true })
+  @Column()
   public name: string;
 
   @Column()
   public translation: string;
 
-  @Column()
-  public image: string;
+  @JoinColumn()
+  @OneToOne(() => File, { eager: true, nullable: true })
+  public image: File;
 
-  @Column()
-  public audio: string;
+  @JoinColumn()
+  @OneToOne(() => File, { eager: true, nullable: true })
+  public audio: File;
 
   @ManyToOne(() => Category, (category: Category) => category.words)
   public category: Category;
