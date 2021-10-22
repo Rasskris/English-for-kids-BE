@@ -8,16 +8,25 @@ export const SERVER_ERROR = 'Something went wrong';
 
 export const SALT_ROUNDS = 10;
 
-export const POSTGRES_ERROR_CODE = {
-  UniqueViolation: '23505',
-};
+export const COUNT_SECONDS_IN_HOUR = 3600;
 
 export const JWT = {
   SECRET: 'JWT_SECRET',
   EXPIRATION_TIME: 'JWT_EXPIRATION_TIME',
 };
 
-export const COUNT_SECONDS_IN_HOUR = 3600;
+export const AWS = {
+  REGION: 'AWS_REGION',
+  ACCESS_KEY_ID: 'AWS_ACCESS_KEY_ID',
+  SECRET_ACCESS_KEY: 'AWS_SECRET_ACCESS_KEY',
+  PUBLIC_BUCKET_NAME: 'AWS_PUBLIC_BUCKET_NAME',
+};
+
+export const wordFieldNames = ['image', 'audio'];
+
+export enum POSTGRES_ERROR_CODE {
+  UniqueViolation = '23505',
+}
 
 export enum ENTITY_NAME {
   USER = 'User',
@@ -28,4 +37,9 @@ export enum ENTITY_NAME {
 export enum QUERY_NAME {
   ID = 'id',
   EMAIL = 'email',
+}
+
+export enum WORD_FIELD_NAME {
+  IMAGE = 'image',
+  AUDIO = 'audio',
 }

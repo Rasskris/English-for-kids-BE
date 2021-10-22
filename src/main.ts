@@ -1,13 +1,23 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { ConfigService } from '@nestjs/config';
 import { ClassSerializerInterceptor } from '@nestjs/common';
+import { config } from 'aws-sdk';
 import * as cookieParser from 'cookie-parser';
+import { AppModule } from './app.module';
+import { AWS } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.use(cookieParser());
+
+  const configservice = app.get(ConfigService);
+  config.update({
+    accessKeyId: configservice.get(AWS.ACCESS_KEY_ID),
+    secretAccessKey: configservice.get(AWS.SECRET_ACCESS_KEY),
+    region: configservice.get(AWS.REGION),
+  });
 
   await app.listen(3000);
 }

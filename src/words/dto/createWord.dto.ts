@@ -1,4 +1,5 @@
 import { IsString, IsNotEmpty } from 'class-validator';
+import { ObjectWithIdDto } from './objectWithId.dto';
 
 export class CreateWordDto {
   @IsString()
@@ -9,6 +10,5 @@ export class CreateWordDto {
   @IsNotEmpty()
   translation: string;
 
-  image: string;
-  audio: string;
+  category: ObjectWithIdDto;
 }
