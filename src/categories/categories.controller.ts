@@ -6,7 +6,10 @@ import {
   Param,
   Patch,
   Post,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { RequestParam } from '../interfaces';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
@@ -26,16 +29,19 @@ export class CategoriesController {
   }
 
   @Post()
-  async createCategory(@Body() categoryData: CreateCategoryDto) {
-    return this.categoriesService.createCategory(categoryData);
+  @UseInterceptors(FileInterceptor('image'))
+  async createCategory(@Body() categoryData: CreateCategoryDto, @UploadedFile() file: Express.Multer.File) {
+    return this.categoriesService.createCategory(categoryData, file);
   }
 
   @Patch(':id')
+  @UseInterceptors(FileInterceptor('image'))
   async updateCategory(
     @Param() { id }: RequestParam,
     @Body() categoryData: UpdateCategoryDto,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    return this.categoriesService.updateCategory(Number(id), categoryData);
+    return this.categoriesService.updateCategory(Number(id), categoryData, file);
   }
 
   @Delete(':id')
