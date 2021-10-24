@@ -1,12 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import {
-  ENTITY_NAME,
-  QUERY_NAME,
-  wordFieldNames,
-  WORD_FIELD_NAME,
-} from '../constants';
+import { ENTITY_NAME, QUERY_NAME, wordFieldNames, WORD_FIELD_NAME } from '../constants';
 import { EntityNotFoudException } from '../exeptions';
 import { CreateWordDto, UpdateWordDto } from './dto';
 import { Word } from './word.entity';
@@ -45,17 +40,6 @@ export class WordsService {
     return savedWord;
   }
 
-  async addWordFile(wordFile: MulterFile) {
-    const { buffer, originalname } = wordFile[0];
-    const file = await this.filesService.uploadFile(buffer, originalname);
-
-    return file;
-  }
-
-  async deleteWordFile(word: Word, fieldName: WORD_FIELD_NAME) {
-    await this.filesService.deleteFile(word[fieldName].id);
-  }
-
   // TODO refactor
   async updateWord(wordData: UpdateWordDto, id: number, files: WordFiles) {
     const { image: imageFile, audio: audioFile } = files;
@@ -91,12 +75,27 @@ export class WordsService {
 
     if (affected) {
       wordFieldNames.forEach(
-        async (fieldName: WORD_FIELD_NAME) =>
-          await this.deleteWordFile(word, fieldName),
+        async (fieldName: WORD_FIELD_NAME) => await this.filesService.deleteFile(word[fieldName].id),
       );
 
       return id;
     }
     throw new EntityNotFoudException(ENTITY_NAME.WORD, QUERY_NAME.ID, id);
+  }
+
+  async addWordFile(wordFile: MulterFile) {
+    const { buffer, originalname } = wordFile[0];
+    const file = await this.filesService.uploadFile(buffer, originalname);
+
+    return file;
+  }
+
+  async deleteWordFile(word: Word, fieldName: WORD_FIELD_NAME) {
+    await this.wordsRepository.update(word.id, {
+      ...word,
+      [fieldName]: null,
+    });
+
+    await this.filesService.deleteFile(word[fieldName].id);
   }
 }
