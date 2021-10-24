@@ -30,10 +30,7 @@ export class WordsController {
       { name: 'audio', maxCount: 1 },
     ]),
   )
-  async createWord(
-    @Body() wordData: CreateWordDto,
-    @UploadedFiles() files: WordFiles,
-  ) {
+  async createWord(@Body() wordData: CreateWordDto, @UploadedFiles() files: WordFiles) {
     return this.wordsService.createWord(wordData, files);
   }
 

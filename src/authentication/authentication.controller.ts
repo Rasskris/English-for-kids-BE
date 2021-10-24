@@ -1,13 +1,4 @@
-import {
-  Body,
-  Req,
-  Controller,
-  HttpCode,
-  Post,
-  UseGuards,
-  Get,
-  SerializeOptions,
-} from '@nestjs/common';
+import { Body, Req, Controller, HttpCode, Post, UseGuards, Get, SerializeOptions } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { RegisterDto } from './dto';
 import { RequestWithUser } from '../interfaces';
