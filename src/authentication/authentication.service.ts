@@ -23,10 +23,7 @@ export class AuthenticationService {
   ) {}
 
   public async register(registrationData: RegisterDto) {
-    const hashedPassword = await bcrypt.hash(
-      registrationData.password,
-      SALT_ROUNDS,
-    );
+    const hashedPassword = await bcrypt.hash(registrationData.password, SALT_ROUNDS);
 
     try {
       const createdUser = await this.usersService.create({
@@ -54,14 +51,8 @@ export class AuthenticationService {
     }
   }
 
-  private async verifyPassoword(
-    plainTextPassword: string,
-    hashedPassword: string,
-  ) {
-    const isPasswordMatching = await bcrypt.compare(
-      plainTextPassword,
-      hashedPassword,
-    );
+  private async verifyPassoword(plainTextPassword: string, hashedPassword: string) {
+    const isPasswordMatching = await bcrypt.compare(plainTextPassword, hashedPassword);
 
     if (!isPasswordMatching) {
       throw new HttpException(USER_PASSWORD_EXEPTION, HttpStatus.BAD_REQUEST);
