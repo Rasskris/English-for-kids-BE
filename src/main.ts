@@ -8,17 +8,21 @@ import { AWS } from './constants';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configservice = app.get(ConfigService);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.use(cookieParser());
 
-  const configservice = app.get(ConfigService);
   config.update({
     accessKeyId: configservice.get(AWS.ACCESS_KEY_ID),
     secretAccessKey: configservice.get(AWS.SECRET_ACCESS_KEY),
     region: configservice.get(AWS.REGION),
   });
 
-  await app.listen(3000);
+  app.enableCors({
+    credentials: true,
+    origin: /vercel\.app$/,
+  });
+  await app.listen(5000);
 }
 bootstrap();
