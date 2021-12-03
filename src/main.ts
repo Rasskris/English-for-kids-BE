@@ -21,7 +21,6 @@ async function bootstrap() {
 
   app.enableCors({
     credentials: true,
-    origin: /herokuapp\.com$/,
   });
   await app.listen(5000);
 }
