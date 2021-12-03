@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ENTITY_NAME, QUERY_NAME, wordFieldNames, WORD_FIELD_NAME } from '../constants';
+import { ENTITY_NAME, QUERY_NAME, FIELD_NAMES, WORD_FIELD_NAME } from '../constants';
 import { EntityNotFoudException } from '../exeptions';
 import { CreateWordDto, UpdateWordDto } from './dto';
 import { Word } from './word.entity';
@@ -74,7 +74,7 @@ export class WordsService {
     const { affected } = await this.wordsRepository.delete(id);
 
     if (affected) {
-      wordFieldNames.forEach(
+      FIELD_NAMES.CATEGORY.forEach(
         async (fieldName: WORD_FIELD_NAME) => await this.filesService.deleteFile(word[fieldName].id),
       );
 

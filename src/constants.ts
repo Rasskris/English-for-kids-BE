@@ -1,4 +1,4 @@
-export const USER_EMAIL_EXEPTION = 'User with this email does not exist';
+export const USER_EMAIL_EXEPTION = 'User with that email already exists';
 
 export const USER_PASSWORD_EXEPTION = 'Wrong credentials provided';
 
@@ -22,7 +22,10 @@ export const AWS = {
   PUBLIC_BUCKET_NAME: 'AWS_PUBLIC_BUCKET_NAME',
 };
 
-export const wordFieldNames = ['image', 'audio'];
+export const FIELD_NAMES = {
+  CATEGORY: ['coverImage', 'icon'],
+  WORD: ['image', 'audio'],
+};
 
 export enum POSTGRES_ERROR_CODE {
   UniqueViolation = '23505',
@@ -42,4 +45,14 @@ export enum QUERY_NAME {
 export enum WORD_FIELD_NAME {
   IMAGE = 'image',
   AUDIO = 'audio',
+}
+
+export enum CATEGORY_FIELD_NAME {
+  COVER_IMAGE = 'coverImage',
+  ICON = 'icon',
+}
+
+export enum ROLE {
+  ADMIN = 'admin',
+  USER = 'user',
 }
