@@ -6,10 +6,12 @@ import {
   Param,
   Patch,
   Post,
-  UploadedFile,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { CATEGORY_FIELD_NAME } from 'src/constants';
+import { CategoryFiles } from 'src/interfaces/categoryFiles.interface';
 import { RequestParam } from '../interfaces';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
@@ -29,19 +31,29 @@ export class CategoriesController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async createCategory(@Body() categoryData: CreateCategoryDto, @UploadedFile() file: Express.Multer.File) {
-    return this.categoriesService.createCategory(categoryData, file);
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: CATEGORY_FIELD_NAME.COVER_IMAGE, maxCount: 1 },
+      { name: CATEGORY_FIELD_NAME.ICON, maxCount: 1 },
+    ]),
+  )
+  async createCategory(@Body() categoryData: CreateCategoryDto, @UploadedFiles() files?: CategoryFiles) {
+    return this.categoriesService.createCategory(categoryData, files);
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: CATEGORY_FIELD_NAME.COVER_IMAGE, maxCount: 1 },
+      { name: CATEGORY_FIELD_NAME.ICON, maxCount: 1 },
+    ]),
+  )
   async updateCategory(
     @Param() { id }: RequestParam,
     @Body() categoryData: UpdateCategoryDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFiles() files?: CategoryFiles,
   ) {
-    return this.categoriesService.updateCategory(Number(id), categoryData, file);
+    return this.categoriesService.updateCategory(Number(id), categoryData, files);
   }
 
   @Delete(':id')

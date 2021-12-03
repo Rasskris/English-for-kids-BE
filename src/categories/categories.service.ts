@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ENTITY_NAME, QUERY_NAME } from '../constants';
+import { categoryFieldNames, CATEGORY_FIELD_NAME, ENTITY_NAME, QUERY_NAME } from '../constants';
 import { EntityNotFoudException } from '../exeptions';
 import { Category } from './category.entity';
 import { File, FilesService } from '../files';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
+import { CategoryFiles } from '../interfaces';
+import { MulterFile } from '../types';
 
 @Injectable()
 export class CategoriesService {
@@ -28,30 +30,37 @@ export class CategoriesService {
     throw new EntityNotFoudException(ENTITY_NAME.CATEGORY, QUERY_NAME.ID, id);
   }
 
-  async createCategory(categoryData: CreateCategoryDto, { buffer, originalname }: Express.Multer.File) {
-    const image = await this.filesService.uploadFile(buffer, originalname);
+  async createCategory(categoryData: CreateCategoryDto, categoryFiles: CategoryFiles) {
+    const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
+    const coverImage = await this.addCategoryFile(coverImageFile);
+    const icon = await this.addCategoryFile(iconFile);
+
     const newCategory = await this.categoriesRepository.create({
       ...categoryData,
-      image,
+      coverImage,
+      icon,
     });
     const savedCategory = await this.categoriesRepository.save(newCategory);
 
     return savedCategory;
   }
 
-  async updateCategory(id: number, categoryData: UpdateCategoryDto, file?: Express.Multer.File) {
+  async updateCategory(id: number, categoryData: UpdateCategoryDto, categoryFiles?: CategoryFiles) {
+    const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
     const category = await this.categoriesRepository.findOne(id);
 
-    let image: File | null;
+    let coverImage: File | null;
+    let icon: File | null;
 
-    if (file) {
-      await this.categoriesRepository.update(id, {
-        ...category,
-        image: null,
-      });
-      await this.filesService.deleteFile(category.image.id);
-      image = await this.filesService.uploadFile(file.buffer, file.originalname);
-      category.image = image;
+    if (coverImageFile) {
+      await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.COVER_IMAGE);
+      coverImage = await this.addCategoryFile(coverImageFile);
+      category.coverImage = coverImage;
+    }
+    if (iconFile) {
+      await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.ICON);
+      icon = await this.addCategoryFile(iconFile);
+      category.icon = icon;
     }
 
     await this.categoriesRepository.update(id, {
@@ -64,14 +73,32 @@ export class CategoriesService {
   }
 
   async deleteCategory(id: number) {
-    const { image } = await this.categoriesRepository.findOne(id);
+    const category = await this.categoriesRepository.findOne(id);
     const { affected } = await this.categoriesRepository.delete(id);
 
     if (affected) {
-      this.filesService.deleteFile(image.id);
+      categoryFieldNames.forEach(
+        async (fieldName: CATEGORY_FIELD_NAME) => await this.filesService.deleteFile(category[fieldName].id),
+      );
 
       return id;
     }
     throw new EntityNotFoudException(ENTITY_NAME.CATEGORY, QUERY_NAME.ID, id);
+  }
+
+  async addCategoryFile(categoryFile: MulterFile) {
+    const { buffer, originalname } = categoryFile[0];
+    const file = await this.filesService.uploadFile(buffer, originalname);
+
+    return file;
+  }
+
+  async deleteCategoryFile(category: Category, fieldName: CATEGORY_FIELD_NAME) {
+    await this.categoriesRepository.update(category.id, {
+      ...category,
+      [fieldName]: null,
+    });
+
+    await this.filesService.deleteFile(category[fieldName].id);
   }
 }

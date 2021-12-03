@@ -15,5 +15,9 @@ export class Category {
 
   @JoinColumn()
   @OneToOne(() => File, { eager: true, nullable: true })
-  public image: File;
+  public coverImage: File;
+
+  @JoinColumn()
+  @OneToOne(() => File, { eager: true, nullable: true })
+  public icon: File;
 }
