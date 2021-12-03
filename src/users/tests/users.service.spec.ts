@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ROLE } from 'src/constants';
 import { User, UsersService } from '..';
 
 const TEST_EMAIL = 'test@test.com';
@@ -8,6 +9,7 @@ const TEST_USER = {
   name: 'test',
   email: TEST_EMAIL,
   password: 'test',
+  role: ROLE.USER,
 };
 
 describe('UsersService', () => {

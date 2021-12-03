@@ -1,5 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose } from 'class-transformer';
+import { ROLE } from '../constants';
 
 @Entity()
 export class User {
@@ -13,6 +14,10 @@ export class User {
   @Column()
   @Expose()
   public name: string;
+
+  @Column()
+  @Expose()
+  public role: ROLE;
 
   @Column()
   public password: string;
