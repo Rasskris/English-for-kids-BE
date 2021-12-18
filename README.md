@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
@@ -67,3 +68,6 @@ $ npm run test:cov
 ## License
 
 Nest is [MIT licensed](LICENSE).
+=======
+# English-for-kids-BE
+>>>>>>> 3aa926312093998b0c5c522998aaa00ed9400638
