@@ -7,6 +7,7 @@ import { UsersModule } from './users';
 import { CategoriesModule } from './categories';
 import { WordsModule } from './words';
 import { FilesModule } from './files';
+import { LoggerModule } from './logger';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { FilesModule } from './files';
     FilesModule,
     CategoriesModule,
     WordsModule,
+    LoggerModule,
   ],
   controllers: [],
   providers: [],
