@@ -10,7 +10,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { CATEGORY_FIELD_NAME } from 'src/constants';
 import { CategoryFiles } from 'src/interfaces/categoryFiles.interface';
 import { RequestParam } from '../interfaces';
 import { CategoriesService } from './categories.service';
@@ -33,8 +32,8 @@ export class CategoriesController {
   @Post()
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: CATEGORY_FIELD_NAME.COVER_IMAGE, maxCount: 1 },
-      { name: CATEGORY_FIELD_NAME.ICON, maxCount: 1 },
+      { name: 'coverImage', maxCount: 1 },
+      { name: 'icon', maxCount: 1 },
     ]),
   )
   async createCategory(@Body() categoryData: CreateCategoryDto, @UploadedFiles() files?: CategoryFiles) {
@@ -44,8 +43,8 @@ export class CategoriesController {
   @Patch(':id')
   @UseInterceptors(
     FileFieldsInterceptor([
-      { name: CATEGORY_FIELD_NAME.COVER_IMAGE, maxCount: 1 },
-      { name: CATEGORY_FIELD_NAME.ICON, maxCount: 1 },
+      { name: 'coverImage', maxCount: 1 },
+      { name: 'icon', maxCount: 1 },
     ]),
   )
   async updateCategory(
