@@ -61,8 +61,9 @@ export class WordsService {
     }
 
     await this.wordsRepository.update(id, {
-      ...word,
       ...wordData,
+      image: word.image,
+      audio: word.audio,
     });
     const updatedWord = this.getWord(id);
 
@@ -74,7 +75,7 @@ export class WordsService {
     const { affected } = await this.wordsRepository.delete(id);
 
     if (affected) {
-      FIELD_NAMES.CATEGORY.forEach(
+      FIELD_NAMES.WORD.forEach(
         async (fieldName: WORD_FIELD_NAME) => await this.filesService.deleteFile(word[fieldName].id),
       );
 

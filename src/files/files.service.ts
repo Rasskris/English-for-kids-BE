@@ -23,6 +23,7 @@ export class FilesService {
         Body: databuffer,
         Key: `${uuid()}-${filename}`,
         ACL: 'public-read',
+        CacheControl: 'max-age=36000',
       })
       .promise();
 

@@ -1,5 +1,7 @@
 export const USER_EMAIL_EXEPTION = 'User with that email already exists';
 
+export const CATEGORY_NAME_EXEPTION = 'Category with that name already exists';
+
 export const USER_PASSWORD_EXEPTION = 'Wrong credentials provided';
 
 export const USER_ID_EXEPTION = 'User with this id does not exist';
