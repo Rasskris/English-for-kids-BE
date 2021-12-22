@@ -1,13 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { FIELD_NAMES, CATEGORY_FIELD_NAME, ENTITY_NAME, QUERY_NAME } from '../constants';
 import { EntityNotFoudException } from '../exeptions';
 import { Category } from './category.entity';
 import { File, FilesService } from '../files';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto';
 import { CategoryFiles } from '../interfaces';
 import { MulterFile } from '../types';
+import {
+  FIELD_NAMES,
+  CATEGORY_FIELD_NAME,
+  ENTITY_NAME,
+  QUERY_NAME,
+  CATEGORY_NAME_EXEPTION,
+  POSTGRES_ERROR_CODE,
+  SERVER_ERROR,
+} from '../constants';
 
 @Injectable()
 export class CategoriesService {
@@ -31,45 +39,60 @@ export class CategoriesService {
   }
 
   async createCategory(categoryData: CreateCategoryDto, categoryFiles: CategoryFiles) {
-    const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
-    const coverImage = await this.addCategoryFile(coverImageFile);
-    const icon = await this.addCategoryFile(iconFile);
+    try {
+      const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
+      const coverImage = await this.addCategoryFile(coverImageFile);
+      const icon = await this.addCategoryFile(iconFile);
 
-    const newCategory = await this.categoriesRepository.create({
-      ...categoryData,
-      coverImage,
-      icon,
-    });
-    const savedCategory = await this.categoriesRepository.save(newCategory);
+      const newCategory = await this.categoriesRepository.create({
+        ...categoryData,
+        coverImage,
+        icon,
+      });
+      const savedCategory = await this.categoriesRepository.save(newCategory);
 
-    return savedCategory;
+      return savedCategory;
+    } catch (error) {
+      if (error?.code === POSTGRES_ERROR_CODE.UniqueViolation) {
+        throw new HttpException(CATEGORY_NAME_EXEPTION, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateCategory(id: number, categoryData: UpdateCategoryDto, categoryFiles?: CategoryFiles) {
-    const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
-    const category = await this.categoriesRepository.findOne(id);
+    try {
+      const { coverImage: coverImageFile, icon: iconFile } = categoryFiles;
+      const category = await this.categoriesRepository.findOne(id);
 
-    let coverImage: File | null;
-    let icon: File | null;
+      let coverImage: File | null;
+      let icon: File | null;
 
-    if (coverImageFile) {
-      await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.COVER_IMAGE);
-      coverImage = await this.addCategoryFile(coverImageFile);
-      category.coverImage = coverImage;
+      if (coverImageFile) {
+        await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.COVER_IMAGE);
+        coverImage = await this.addCategoryFile(coverImageFile);
+        category.coverImage = coverImage;
+      }
+      if (iconFile) {
+        await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.ICON);
+        icon = await this.addCategoryFile(iconFile);
+        category.icon = icon;
+      }
+
+      await this.categoriesRepository.update(id, {
+        ...categoryData,
+        coverImage: category.coverImage,
+        icon: category.icon,
+      });
+      const updatedCategory = await this.categoriesRepository.findOne(id);
+
+      return updatedCategory;
+    } catch (error) {
+      if (error?.code === POSTGRES_ERROR_CODE.UniqueViolation) {
+        throw new HttpException(CATEGORY_NAME_EXEPTION, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    if (iconFile) {
-      await this.deleteCategoryFile(category, CATEGORY_FIELD_NAME.ICON);
-      icon = await this.addCategoryFile(iconFile);
-      category.icon = icon;
-    }
-
-    await this.categoriesRepository.update(id, {
-      ...category,
-      ...categoryData,
-    });
-    const updatedCategory = await this.categoriesRepository.findOne(id);
-
-    return updatedCategory;
   }
 
   async deleteCategory(id: number) {
@@ -87,6 +110,7 @@ export class CategoriesService {
   }
 
   async addCategoryFile(categoryFile: MulterFile) {
+    console.log('addCategoryFile >>', categoryFile);
     const { buffer, originalname } = categoryFile[0];
     const file = await this.filesService.uploadFile(buffer, originalname);
 
